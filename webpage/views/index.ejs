@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MooMail</title>
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>MooMail Summary</h1>
+      <p class="cream"><%= updatedDate %></p>
+    </header>
+
+    <section class="summary">
+      <h2><div>Portfolio Summary for user id: <%= user_id %></div></h2>
+        <p class="cream">Currency: <%= currency %></p>
+      <div class="summary-grid">
+        <div>
+          <h3>Total Assets</h3>
+          <p>$<%= Total_assets %></p>
+        </div>
+        <div>
+          <h3>
+            <% if (unrealized_pl > 0){%> Total Unrealized Profit <% } else {%>
+            Total Unrealized Loss <% } %>
+          </h3>
+          <p>$<%= unrealized_pl %></p>
+        </div>
+        <div>
+          <h3 >Cash Buying Power</h3>
+          <p>$<%= cash_bp %></p>
+        </div>
+      </div>
+    </section>
+    <section class="holdings">
+      <h2>Asset Holdings</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>
+              <div>Market value</div>
+            <div>Shares</div>
+          </th>
+            <th>
+              <div>Price</div>
+            <div>Cost</div>
+          </th>
+           <th>
+              <div>P/L</div>
+            <div>%</div>
+          </th>
+            <th>% of Portfolio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% holdings.forEach(h => { %>
+          <tr>
+            <td class="stock_name"><%= h.stock_name %></td>
+            <td class="value-cell">
+              <div>$<%= h.market_val %></div>
+              <div class="sub"><%= h.qty %></div>
+            </td>
+            <td>$<%#= h.price %></td>
+            <td><%#= h.percentage %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </section>
+    <!-- 
+  <section class="charts">
+    <h2>Asset Allocation</h2>
+    <canvas id="allocationChart" width="400" height="300"></canvas>
+
+    <h2>Portfolio Performance</h2>
+    <canvas id="performanceChart" width="400" height="300"></canvas>
+  </section>
+-->
+    <section class="footer">
+      <p>Built by wonnom for tracking investments.</p>
+    </section>
+    <!-- 
+  <script>
+    const allocationLabels = <%#- JSON.stringify(holdings.map(h => h.ticker)) %>;
+    const allocationData = <%#- JSON.stringify(holdings.map(h => h.value)) %>;
+    const allocationColors = ['#4CAF50', '#FFC107', '#2196F3', '#FF5722', '#9C27B0'];
+
+    const ctxAlloc = document.getElementById('allocationChart').getContext('2d');
+    new Chart(ctxAlloc, {
+      type: 'pie',
+      data: {
+        labels: allocationLabels,
+        datasets: [{
+          label: 'Asset Allocation',
+          data: allocationData,
+          backgroundColor: allocationColors.slice(0, allocationLabels.length),
+        }]
+      }
+    });
+
+    const performanceLabels = <%#- JSON.stringify(performanceData.labels) %>;
+    const performanceValues = <%#- JSON.stringify(performanceData.values) %>;
+
+    const ctxPerf = document.getElementById('performanceChart').getContext('2d');
+    new Chart(ctxPerf, {
+      type: 'line',
+      data: {
+        labels: performanceLabels,
+        datasets: [{
+          label: 'Portfolio Value ($)',
+          data: performanceValues,
+          borderColor: '#673AB7',
+          backgroundColor: 'rgba(103, 58, 183, 0.1)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: false
+          }
+        }
+      }
+    }); -->
+    <!-- </script> -->
+  </body>
+</html>

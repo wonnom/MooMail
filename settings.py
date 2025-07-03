@@ -1,4 +1,4 @@
-from moomoo import *;
+from moomoo import *
 
 OPEND_ADDRESS = '127.0.0.1'  # OpenD listening address
 OPEND_PORT = 11111  # OpenD listening port
