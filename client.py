@@ -14,6 +14,8 @@ class Account:
         return self.trade_context.get_login_user_id()
 
 
+
+
     def get_assets_info(self):
         ret, data = self.trade_context.accinfo_query(trd_env=TRADING_ENVIRONMENT, acc_id=0, acc_index=0, refresh_cache=False, currency=CURRENCY)
         if ret == RET_OK:
