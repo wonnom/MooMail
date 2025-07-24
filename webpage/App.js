@@ -1,5 +1,7 @@
 import express from "express";
 import {spawn} from "child_process";
+import { parse } from "path";
+import { getRandomQuote } from "./quotes.js";
 
 
 const app = express();
@@ -34,14 +36,17 @@ app.get("/", (req,res)=>{
     parsedData = JSON.parse(middleLines);
     // console.log('parsed output:', parsedData);
 
-    console.log('user_id: ', parsedData[0].user_id);
-    console.log('currency: ', parsedData[1].currency);
-    console.log('total assets: ', parsedData[2].assets);
-    console.log('unrealized_pl: ', parsedData[3].unrealized_pl);
-    console.log('cash_bp: ', parsedData[4].cash_bp);
-    console.log('positions: ', parsedData[5]);
+    console.log(parsedData[0]);
+    console.log(parsedData[1]);
+    console.log(parsedData[2]);
+    console.log(parsedData[3]);
+    console.log(parsedData[4]);
+    console.log(parsedData[5]);
+    console.log(parsedData[6])
 
 });
+
+const dailyQuote = getRandomQuote();
 
   
 
@@ -58,14 +63,19 @@ app.get("/", (req,res)=>{
 
     res.render("index.ejs", {
         updatedDate: new Date(),
+        dailyQuote: dailyQuote,
         user_id: parsedData[0].user_id,
         currency: parsedData[1].currency,
         Total_assets: parsedData[2].assets,
         unrealized_pl: parsedData[3].unrealized_pl,
         cash_bp: parsedData[4].cash_bp,
-        holdings: parsedData[5]
+        holdings: parsedData[5],
+        pie_chart: parsedData[6]
+
+
     }); 
 
 });
+
 
 });

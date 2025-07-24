@@ -6,6 +6,7 @@
     <title>MooMail</title>
     <link rel="stylesheet" href="/styles/styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.2.0/dist/chartjs-chart-matrix.min.js"></script>
   </head>
   <body>
     <header>
@@ -15,25 +16,49 @@
 
     <section class="summary">
       <h2><div>Portfolio Summary for user id: <%= user_id %></div></h2>
-        <p class="cream">Currency: <%= currency %></p>
+      <p class="cream">Currency: <%= currency %></p>
       <div class="summary-grid">
         <div>
           <h3>Total Assets</h3>
-          <p>$<%= Total_assets %></p>
+          <p>
+            <%= Total_assets.toLocaleString('en-US', { style: 'currency',
+            currency: 'USD' }) %>
+          </p>
         </div>
         <div>
           <h3>
             <% if (unrealized_pl > 0){%> Total Unrealized Profit <% } else {%>
             Total Unrealized Loss <% } %>
           </h3>
-          <p>$<%= unrealized_pl %></p>
+          <p>
+            <%= unrealized_pl.toLocaleString('en-US', { style: 'currency',
+            currency: 'USD' }) %>
+          </p>
         </div>
         <div>
-          <h3 >Cash Buying Power</h3>
-          <p>$<%= cash_bp %></p>
+          <h3>Cash Buying Power</h3>
+          <p>
+            <%= cash_bp.toLocaleString('en-US', { style: 'currency', currency:
+            'USD' }) %>
+          </p>
         </div>
       </div>
+      <div class="quote-container">
+    <!-- Quotes will be populated by JavaScript -->
+     <div class="quote-text">"<%= dailyQuote.text %>"</div>
+          <div class="quote-author cream">— <%= dailyQuote.author %></div>
+  </div>
     </section>
+
+
+    <section class="charts">
+      <h2>Overview breakdown</h2>
+      <div class="chart-row">
+      <canvas id="allocationChart"></canvas>
+      <canvas id="heatmapChart"></canvas>
+      </div>
+    </section>
+
     <section class="holdings">
       <h2>Asset Holdings</h2>
       <table>
@@ -42,16 +67,16 @@
             <th>Name</th>
             <th>
               <div>Market value</div>
-            <div>Shares</div>
-          </th>
+              <div>Shares</div>
+            </th>
             <th>
               <div>Price</div>
-            <div>Cost</div>
-          </th>
-           <th>
+              <div>Cost</div>
+            </th>
+            <th>
               <div>P/L</div>
-            <div>%</div>
-          </th>
+              <div>%</div>
+            </th>
             <th>% of Portfolio</th>
           </tr>
         </thead>
@@ -59,74 +84,193 @@
           <% holdings.forEach(h => { %>
           <tr>
             <td class="stock_name"><%= h.stock_name %></td>
-            <td class="value-cell">
-              <div>$<%= h.market_val %></div>
+            <td>
+              <div>
+                <%= h.market_val.toLocaleString('en-US', { style: 'currency',
+                currency: 'USD' }) %>
+              </div>
               <div class="sub"><%= h.qty %></div>
             </td>
-            <td>$<%#= h.price %></td>
-            <td><%#= h.percentage %></td>
+            <td>
+              <div>
+                <%= h.price.toLocaleString('en-US', { style: 'currency',
+                currency: 'USD' }) %>
+              </div>
+              <div class="sub">
+                <%= h.cost.toLocaleString('en-US', { style: 'currency',
+                currency: 'USD' }) %>
+              </div>
+            </td>
+            <td>
+              <div>
+                <%= h.unrealized_pl.toLocaleString('en-US', { style:
+                'currency', currency: 'USD' }) %>
+              </div>
+              <div class="sub">
+                <%= h.pl_ratio.toLocaleString('en-US', { minimumFractionDigits:
+                2, maximumFractionDigits: 2 }) + '%' %>
+              </div>
+            </td>
+            <td>
+              <%= h.portfolio_ratio.toLocaleString('en-US', { style: 'percent',
+              minimumFractionDigits: 2 }) %>
+            </td>
           </tr>
           <% }) %>
         </tbody>
       </table>
     </section>
-    <!-- 
-  <section class="charts">
-    <h2>Asset Allocation</h2>
-    <canvas id="allocationChart" width="400" height="300"></canvas>
 
-    <h2>Portfolio Performance</h2>
-    <canvas id="performanceChart" width="400" height="300"></canvas>
-  </section>
--->
+
     <section class="footer">
       <p>Built by wonnom for tracking investments.</p>
     </section>
-    <!-- 
-  <script>
-    const allocationLabels = <%#- JSON.stringify(holdings.map(h => h.ticker)) %>;
-    const allocationData = <%#- JSON.stringify(holdings.map(h => h.value)) %>;
-    const allocationColors = ['#4CAF50', '#FFC107', '#2196F3', '#FF5722', '#9C27B0'];
 
-    const ctxAlloc = document.getElementById('allocationChart').getContext('2d');
-    new Chart(ctxAlloc, {
-      type: 'pie',
-      data: {
-        labels: allocationLabels,
-        datasets: [{
-          label: 'Asset Allocation',
-          data: allocationData,
-          backgroundColor: allocationColors.slice(0, allocationLabels.length),
-        }]
-      }
-    });
+    <script>
 
-    const performanceLabels = <%#- JSON.stringify(performanceData.labels) %>;
-    const performanceValues = <%#- JSON.stringify(performanceData.values) %>;
+      function generateColors(count) {
+        const colors = [];
+        for (let i = 0; i < count; i++) {
+          const hue = Math.floor((400 / count) * i);
+          const saturation = 90 + Math.floor(Math.sin(i) * 10);
+          const lightness = 40 + Math.floor(Math.cos(i) * 5);
+          colors.push(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
+        }
+        return colors;
+      };
 
-    const ctxPerf = document.getElementById('performanceChart').getContext('2d');
-    new Chart(ctxPerf, {
-      type: 'line',
-      data: {
-        labels: performanceLabels,
-        datasets: [{
-          label: 'Portfolio Value ($)',
-          data: performanceValues,
-          borderColor: '#673AB7',
-          backgroundColor: 'rgba(103, 58, 183, 0.1)',
-          fill: true,
-          tension: 0.3
-        }]
+
+  const pie_chart = <%- JSON.stringify(pie_chart) %>;
+  const stock_name = pie_chart.map(item => item.stock_name);
+  const portfolio_ratio = pie_chart.map(item => item.portfolio_ratio);
+  const formatted_portfolio_ratio = portfolio_ratio.map(val => val.toLocaleString('en-US', { style: 'percent', minimumFractionDigits: 2 }));
+  const allocationColors = generateColors(stock_name.length);
+
+const ctxAlloc = document.getElementById('allocationChart').getContext('2d');
+new Chart(ctxAlloc, {
+  type: 'pie',
+  data: {
+    labels:  stock_name,
+    datasets: [{
+      label: 'Portfolio Ratio',
+      data: portfolio_ratio ,
+      backgroundColor: allocationColors,
+    }]
+  },
+  options: {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const label = context.label || '';
+            const formatted = formatted_portfolio_ratio[context.dataIndex];
+            return `${label}: ${formatted}`;
+          }
+        }
       },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: false
+      title: {
+        display: true,
+        text: 'Asset Allocation',
+        font: {
+          size: 20,     
+          weight: 'bold',
+        },
+        color: '#FFF'
+      },
+      legend: {
+        position: 'right',
+        labels: {
+        font: {
+          size: 16},
+        color: '#FFF' }
+      }
+    }
+  }
+});
+
+      const holdings = <%- JSON.stringify(holdings) %>;
+
+        const ctx = document.getElementById('heatmapChart').getContext('2d');
+
+  // Create matrix chart data
+  const matrixData = holdings.map((stock, index) => ({
+    x: 0,
+    y: index,
+    v: stock.pl_ratio,
+    label: stock.stock_name
+  }));
+
+  // Get stock names for the y-axis
+  const stockNames = holdings.map(stock => stock.stock_name);
+
+  new Chart(ctx, {
+    type: 'matrix',
+    data: {
+      datasets: [{
+        data: matrixData,
+        backgroundColor(ctx) {
+          const val = ctx.dataset.data[ctx.dataIndex].v;
+          const intensity = Math.min(1, Math.abs(val) / 100 + 0.1);
+          return val >= 0
+            ? `rgba(0, 200, 0, ${intensity})`
+            : `rgba(200, 0, 0, ${intensity})`;
+        },
+        width: () => 300,
+        height: () => 30,
+        borderWidth: 1,
+        borderColor: '#333',
+      }]
+    },
+    options: {
+      scales: {
+        x: {
+          display: false
+        },
+        y: {
+          type: 'category',
+          labels: stockNames,
+          offset: true,
+          grid: {
+            display: false
+          },
+          ticks :{
+            color: 'white'
+        }
+      }
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'P/L Heatmap',
+          color: 'white',
+          font: {
+            size: 20,
+            weight: 'bold'
+          },
+          padding: {
+            bottom: 10
+          }
+        },
+        legend: {
+          display: false
+        },
+        tooltip: {
+          titleColor: 'white',
+          bodyColor: 'white',
+          font : {
+            size: 16
+          },
+          callbacks: {
+            label(context) {
+              const item = context.raw;
+              const pct = (item.v).toFixed(2);
+              return `${item.label}: ${pct}%`;
+            }
           }
         }
       }
-    }); -->
-    <!-- </script> -->
+    }
+  });
+    </script>
   </body>
 </html>
