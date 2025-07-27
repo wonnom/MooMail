@@ -52,31 +52,29 @@ header h1 {
   border: 5px solid #632800;
 }
 
-      
-      .quote-container {
-        background: rgba(0,0,0,0.3);
-        border-radius: 8px;
-        padding: 20px;
-        margin-top: 2rem;
-        border-left: 4px solid #d85700;
-      }
-      
-      .quote-text {
-        color: #ffffff98;
-        font-style: italic;
-        font-size: 1.5rem;
-        line-height: 1.6;
-        margin-top: 10px;
-        margin-bottom: 10px;
-      }
-      
-      .quote-author {
-        font-weight: bold;
-        text-align: right;
-        font-size: 1em;
-        font-style: italic;
-      }
+.quote-container {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 2rem;
+  border-left: 4px solid #d85700;
+}
 
+.quote-text {
+  color: #ffffff98;
+  font-style: italic;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.quote-author {
+  font-weight: bold;
+  text-align: right;
+  font-size: 1em;
+  font-style: italic;
+}
 
 .holdings {
   padding: 2rem;
@@ -147,11 +145,122 @@ tr:hover {
   background-color: #1e3e62;
 }
 
-#heatmapChart{
+#heatmapChart {
   background-color: #1e3e62;
   margin-bottom: 2rem;
   border-radius: 8px;
   max-height: 700px;
   max-width: 1000px;
   width: 66.66%;
+}
+
+.Email {
+  padding: 4rem;
+  background-color: #1e3e62;
+  margin-top: 2rem;
+  text-align: center;
+  border-top: 5px solid #d85700;
+}
+
+.Email h2 {
+  color: #ffffff;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.Email form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 2px solid #632800;
+}
+
+.Email input[type="text"] {
+  padding: 1rem;
+  font-size: 1.1rem;
+  border: 2px solid #632800;
+  border-radius: 8px;
+  background-color: #0b192c;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.Email input[type="text"]:focus {
+  outline: none;
+  border-color: #d85700;
+  box-shadow: 0 0 0 3px rgba(216, 87, 0, 0.2);
+  background-color: #1e3e62;
+}
+
+.Email input[type="text"]::placeholder {
+  color: antiquewhite;
+  opacity: 0.7;
+}
+
+.Email input[type="submit"] {
+  padding: 1.2rem 2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 8px;
+  background: #d85700;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.Email input[type="submit"]:hover {
+  background: linear-gradient(135deg, #ff6b1a 0%, #d85700 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(216, 87, 0, 0.4);
+}
+
+.Email input[type="submit"]:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(216, 87, 0, 0.3);
+}
+
+.notification-bar {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 20px 0;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.notification-bar.show {
+  display: flex;
+}
+
+.notification-bar.error {
+  background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+}
+
+.notification-text {
+  flex: 1;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.close-btn:hover {
+  opacity: 1;
 }

@@ -44,18 +44,17 @@
         </div>
       </div>
       <div class="quote-container">
-    <!-- Quotes will be populated by JavaScript -->
-     <div class="quote-text">"<%= dailyQuote.text %>"</div>
-          <div class="quote-author cream">— <%= dailyQuote.author %></div>
-  </div>
+        <!-- Quotes will be populated by JavaScript -->
+        <div class="quote-text">"<%= dailyQuote.text %>"</div>
+        <div class="quote-author cream">— <%= dailyQuote.author %></div>
+      </div>
     </section>
-
 
     <section class="charts">
       <h2>Overview breakdown</h2>
       <div class="chart-row">
-      <canvas id="allocationChart"></canvas>
-      <canvas id="heatmapChart"></canvas>
+        <canvas id="allocationChart"></canvas>
+        <canvas id="heatmapChart"></canvas>
       </div>
     </section>
 
@@ -103,8 +102,8 @@
             </td>
             <td>
               <div>
-                <%= h.unrealized_pl.toLocaleString('en-US', { style:
-                'currency', currency: 'USD' }) %>
+                <%= h.unrealized_pl.toLocaleString('en-US', { style: 'currency',
+                currency: 'USD' }) %>
               </div>
               <div class="sub">
                 <%= h.pl_ratio.toLocaleString('en-US', { minimumFractionDigits:
@@ -121,6 +120,32 @@
       </table>
     </section>
 
+    <div class="Email">
+      <h2>MooMail it to your email!</h2>
+      <form action="/send" method="post">
+        <input
+          type="text"
+          name="email"
+          placeholder="Enter email address"
+          required
+        />
+        <input
+          type="text"
+          name="appPassword"
+          placeholder="Enter app password"
+          required
+          autocomplete="off"
+        />
+        <input type="submit" value="send" />
+      </form>
+      <div id="notification-bar" class="notification-bar">
+        <div class="notification-text">
+          <strong>Success!</strong> Your portfolio summary has been sent to your
+          email.
+        </div>
+        <button class="close-btn" onclick="hideNotificationBar()">×</button>
+      </div>
+    </div>
 
     <section class="footer">
       <p>Built by wonnom for tracking investments.</p>
@@ -128,149 +153,214 @@
 
     <script>
 
-      function generateColors(count) {
-        const colors = [];
-        for (let i = 0; i < count; i++) {
-          const hue = Math.floor((400 / count) * i);
-          const saturation = 90 + Math.floor(Math.sin(i) * 10);
-          const lightness = 40 + Math.floor(Math.cos(i) * 5);
-          colors.push(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
-        }
-        return colors;
-      };
+            function generateColors(count) {
+              const colors = [];
+              for (let i = 0; i < count; i++) {
+                const hue = Math.floor((400 / count) * i);
+                const saturation = 90 + Math.floor(Math.sin(i) * 10);
+                const lightness = 40 + Math.floor(Math.cos(i) * 5);
+                colors.push(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
+              }
+              return colors;
+            };
 
 
-  const pie_chart = <%- JSON.stringify(pie_chart) %>;
-  const stock_name = pie_chart.map(item => item.stock_name);
-  const portfolio_ratio = pie_chart.map(item => item.portfolio_ratio);
-  const formatted_portfolio_ratio = portfolio_ratio.map(val => val.toLocaleString('en-US', { style: 'percent', minimumFractionDigits: 2 }));
-  const allocationColors = generateColors(stock_name.length);
+        const pie_chart = <%- JSON.stringify(pie_chart) %>;
+        const stock_name = pie_chart.map(item => item.stock_name);
+        const portfolio_ratio = pie_chart.map(item => item.portfolio_ratio);
+        const formatted_portfolio_ratio = portfolio_ratio.map(val => val.toLocaleString('en-US', { style: 'percent', minimumFractionDigits: 2 }));
+        const allocationColors = generateColors(stock_name.length);
 
-const ctxAlloc = document.getElementById('allocationChart').getContext('2d');
-new Chart(ctxAlloc, {
-  type: 'pie',
-  data: {
-    labels:  stock_name,
-    datasets: [{
-      label: 'Portfolio Ratio',
-      data: portfolio_ratio ,
-      backgroundColor: allocationColors,
-    }]
-  },
-  options: {
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: function(context) {
-            const label = context.label || '';
-            const formatted = formatted_portfolio_ratio[context.dataIndex];
-            return `${label}: ${formatted}`;
-          }
-        }
-      },
-      title: {
-        display: true,
-        text: 'Asset Allocation',
-        font: {
-          size: 20,     
-          weight: 'bold',
+      const ctxAlloc = document.getElementById('allocationChart').getContext('2d');
+      new Chart(ctxAlloc, {
+        type: 'pie',
+        data: {
+          labels:  stock_name,
+          datasets: [{
+            label: 'Portfolio Ratio',
+            data: portfolio_ratio ,
+            backgroundColor: allocationColors,
+          }]
         },
-        color: '#FFF'
-      },
-      legend: {
-        position: 'right',
-        labels: {
-        font: {
-          size: 16},
-        color: '#FFF' }
-      }
-    }
-  }
-});
-
-      const holdings = <%- JSON.stringify(holdings) %>;
-
-        const ctx = document.getElementById('heatmapChart').getContext('2d');
-
-  // Create matrix chart data
-  const matrixData = holdings.map((stock, index) => ({
-    x: 0,
-    y: index,
-    v: stock.pl_ratio,
-    label: stock.stock_name
-  }));
-
-  // Get stock names for the y-axis
-  const stockNames = holdings.map(stock => stock.stock_name);
-
-  new Chart(ctx, {
-    type: 'matrix',
-    data: {
-      datasets: [{
-        data: matrixData,
-        backgroundColor(ctx) {
-          const val = ctx.dataset.data[ctx.dataIndex].v;
-          const intensity = Math.min(1, Math.abs(val) / 100 + 0.1);
-          return val >= 0
-            ? `rgba(0, 200, 0, ${intensity})`
-            : `rgba(200, 0, 0, ${intensity})`;
-        },
-        width: () => 300,
-        height: () => 30,
-        borderWidth: 1,
-        borderColor: '#333',
-      }]
-    },
-    options: {
-      scales: {
-        x: {
-          display: false
-        },
-        y: {
-          type: 'category',
-          labels: stockNames,
-          offset: true,
-          grid: {
-            display: false
-          },
-          ticks :{
-            color: 'white'
-        }
-      }
-      },
-      plugins: {
-        title: {
-          display: true,
-          text: 'P/L Heatmap',
-          color: 'white',
-          font: {
-            size: 20,
-            weight: 'bold'
-          },
-          padding: {
-            bottom: 10
-          }
-        },
-        legend: {
-          display: false
-        },
-        tooltip: {
-          titleColor: 'white',
-          bodyColor: 'white',
-          font : {
-            size: 16
-          },
-          callbacks: {
-            label(context) {
-              const item = context.raw;
-              const pct = (item.v).toFixed(2);
-              return `${item.label}: ${pct}%`;
+        options: {
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const formatted = formatted_portfolio_ratio[context.dataIndex];
+                  return `${label}: ${formatted}`;
+                }
+              }
+            },
+            title: {
+              display: true,
+              text: 'Asset Allocation',
+              font: {
+                size: 20,
+                weight: 'bold',
+              },
+              color: '#FFF'
+            },
+            legend: {
+              position: 'right',
+              labels: {
+              font: {
+                size: 16},
+              color: '#FFF' }
             }
           }
         }
-      }
-    }
-  });
+      });
+
+            const holdings = <%- JSON.stringify(holdings) %>;
+
+              const ctx = document.getElementById('heatmapChart').getContext('2d');
+
+        // Create matrix chart data
+        const matrixData = holdings.map((stock, index) => ({
+          x: 0,
+          y: index,
+          v: stock.pl_ratio,
+          label: stock.stock_name
+        }));
+
+        // Get stock names for the y-axis
+        const stockNames = holdings.map(stock => stock.stock_name);
+
+        new Chart(ctx, {
+          type: 'matrix',
+          data: {
+            datasets: [{
+              data: matrixData,
+              backgroundColor(ctx) {
+                const val = ctx.dataset.data[ctx.dataIndex].v;
+                const intensity = Math.min(1, Math.abs(val) / 100 + 0.1);
+                return val >= 0
+                  ? `rgba(0, 200, 0, ${intensity})`
+                  : `rgba(200, 0, 0, ${intensity})`;
+              },
+              width: () => 300,
+              height: () => 30,
+              borderWidth: 1,
+              borderColor: '#333',
+            }]
+          },
+          options: {
+            scales: {
+              x: {
+                display: false
+              },
+              y: {
+                type: 'category',
+                labels: stockNames,
+                offset: true,
+                grid: {
+                  display: false
+                },
+                ticks :{
+                  color: 'white'
+              }
+            }
+            },
+            plugins: {
+              title: {
+                display: true,
+                text: 'P/L Heatmap',
+                color: 'white',
+                font: {
+                  size: 20,
+                  weight: 'bold'
+                },
+                padding: {
+                  bottom: 10
+                }
+              },
+              legend: {
+                display: false
+              },
+              tooltip: {
+                titleColor: 'white',
+                bodyColor: 'white',
+                font : {
+                  size: 16
+                },
+                callbacks: {
+                  label(context) {
+                    const item = context.raw;
+                    const pct = (item.v).toFixed(2);
+                    return `${item.label}: ${pct}%`;
+                  }
+                }
+              }
+            }
+          }
+        });
+
+                function showNotificationBar(success) {
+                  
+                  if(!success){
+                    const notificationBar = document.getElementById('notification-bar');
+                    notificationBar.className = 'notification-bar';
+                    notificationBar.classList.add('error');
+                    const text = notificationBar.querySelector('.notification-text');
+                    text.innerHTML = '<strong>Error!</strong> Failed to send email. Please try again.';
+                  }
+
+                  document.getElementById('notification-bar').classList.add('show');
+
+
+                  setTimeout(() => {
+                      hideNotificationBar();
+                  }, 5000);
+              }
+
+              function hideNotificationBar() {
+                  document.getElementById('notification-bar').classList.remove('show');
+              }
+
+        document.addEventListener('DOMContentLoaded', function() {
+          const emailForm = document.querySelector('.Email form');
+
+          if (emailForm) {
+              emailForm.addEventListener('submit', async function(e) {
+                  e.preventDefault();
+
+                  const formData = new FormData(this);
+                  const submitBtn = this.querySelector('input[type="submit"]');
+
+                  // Show loading
+                  submitBtn.value = 'Sending...';
+                  submitBtn.disabled = true;
+
+
+                  try {
+                      const response = await fetch('/send', {
+                          method: 'POST',
+                          body: new URLSearchParams(formData)
+                      });
+
+                      const result = await response.json();
+
+
+                      if(response.ok && result.success){
+                        showNotificationBar(true);
+                          this.reset();
+                      } else{
+                        showNotificationBar(false);
+                      }
+                          
+
+                  } catch (error) {
+                      showNotificationBar(false);
+                      
+                  } finally {
+                      submitBtn.value = 'Send Portfolio Summary';
+                      submitBtn.disabled = false;
+                  }
+              });
+          }
+      });
     </script>
   </body>
 </html>

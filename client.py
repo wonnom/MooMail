@@ -19,19 +19,14 @@ class Account:
     def get_assets_info(self):
         ret, data = self.trade_context.accinfo_query(trd_env=TRADING_ENVIRONMENT, acc_id=0, acc_index=0, refresh_cache=False, currency=CURRENCY)
         if ret == RET_OK:
-            # print(data)
             return data
-            # print(data['power'][0])  # Get the first buying power
-            # print(data['power'].values.tolist())  # convert to list
+
         else:
             print('accinfo_query error: ', data)
 
     def get_positions_info(self):
         ret, data = self.trade_context.position_list_query()
         if ret == RET_OK:
-            # print(data.__dict__)
-            # print(data)
-            # print(data['pl_ratio_avg_cost'])  # Convert to list
             return data
         else:
             print('position_list_query error: ', data)
@@ -52,7 +47,6 @@ class send:
 
     def assets(assets_info):
         assets = round(assets_info['total_assets'].values[0], 2)
-        # print(assets_info.__dict__)
         dict = {"assets" : assets}
         return dict
         print(json.dumps(dict))
@@ -72,17 +66,44 @@ class send:
         print(json.dumps(dict))
 
     def holdings(positions_info, assets_info):
-        # print(positions_info['stock_name'], positions_info['market_val'], positions_info['qty'], positions_info['market_val']/ positions_info['qty'], 
-        #       positions_info['average_cost'], positions_info['unrealized_pl'], positions_info['realized_pl'], round(positions_info['market_val']/ assets_info['total_assets'].values[0] * 100, 0))
-        # print(type(positions_info['stock_name'].values))
-        stock_name = positions_info['stock_name'].values
-        market_val = np.round(positions_info['market_val'].values, 2)
-        qty = positions_info['qty'].values
 
-        holdings = [{"stock_name": stock_name,"market_val": market_val, "qty": qty }
-                     for stock_name, market_val, qty in zip(stock_name, market_val, qty)
+        stock_name = positions_info['stock_name'].values
+        market_val = positions_info['market_val'].values
+        qty = positions_info['qty'].values
+        price = positions_info['market_val'].values/ positions_info['qty'].values
+        cost = positions_info['average_cost']
+        unrealized_pl = positions_info['unrealized_pl']
+        pl_ratio = positions_info['pl_ratio_avg_cost']
+        portfolio_ratio = positions_info['market_val']/ assets_info['total_assets'].values
+
+        holdings = [{"stock_name": stock_name,
+                     "market_val": market_val, 
+                     "qty": qty,
+                     "price": price,
+                     "cost": cost,
+                     "unrealized_pl": unrealized_pl,
+                     "pl_ratio": pl_ratio,
+                     "portfolio_ratio": portfolio_ratio}
+                     for stock_name, market_val, qty, price, cost, unrealized_pl, pl_ratio, portfolio_ratio 
+                     in zip(stock_name, market_val, qty, price, cost, unrealized_pl, pl_ratio, portfolio_ratio)
                      ]
-        
+        holdings.sort(key=lambda h: h['pl_ratio'], reverse=True)
+        return holdings
+    
+    def pie_chart_holdings(positions_info, assets_info, cash_bp):
+        stock_name = positions_info['stock_name'].values
+        portfolio_ratio = positions_info['market_val']/ assets_info['total_assets'].values
+        stock_name = np.append(stock_name, 'Cash/Funds')
+
+        cash_ratio = cash_bp['cash_bp'] / assets_info['total_assets'].values
+        portfolio_ratio = pd.concat([portfolio_ratio, pd.Series(cash_ratio)], ignore_index=True)
+
+        holdings = [{"stock_name": stock_name,
+                     "portfolio_ratio": portfolio_ratio}
+                     for stock_name, portfolio_ratio
+                     in zip(stock_name, portfolio_ratio)
+                     ]
+        holdings.sort(key=lambda h: h['portfolio_ratio'], reverse=True)
         return holdings
 
         
@@ -92,7 +113,6 @@ account = Account()
 user_id = account.init_context()
 assets_info = account.get_assets_info()
 positions_info = account.get_positions_info()
-# print(assets_info['securities_assets'].values[0])
 
 ###get the relevant data and convert them into dictionaries to be sent
 user_id = send.user_id(user_id)
@@ -101,9 +121,10 @@ assets = send.assets(assets_info)
 unrealized_pl = send.unrealized_pl(positions_info)
 cash_bp = send.cash_bp(assets_info)
 holdings = send.holdings(positions_info, assets_info)
+pie_chart_holdings = send.pie_chart_holdings(positions_info, assets_info, cash_bp)
 
 ###gather list of dictionaries and stdout
-data = [user_id, currency, assets, unrealized_pl, cash_bp, holdings]
+data = [user_id, currency, assets, unrealized_pl, cash_bp, holdings, pie_chart_holdings]
 print(json.dumps(data))
 
 

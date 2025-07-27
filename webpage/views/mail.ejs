@@ -1,0 +1,122 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MooMail</title>
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.2.0/dist/chartjs-chart-matrix.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>MooMail Summary Snapshot</h1>
+      <p class="cream"><%= updatedDate %></p>
+    </header>
+
+    <section class="summary">
+      <h2><div>Portfolio Summary for user id: <%= user_id %></div></h2>
+      <p class="cream">Currency: <%= currency %></p>
+      <div class="summary-grid">
+        <div>
+          <h3>Total Assets</h3>
+          <p>
+            <%= Total_assets.toLocaleString('en-US', { style: 'currency',
+            currency: 'USD' }) %>
+          </p>
+        </div>
+        <div>
+          <h3>
+            <% if (unrealized_pl > 0){%> Total Unrealized Profit <% } else {%>
+            Total Unrealized Loss <% } %>
+          </h3>
+          <p>
+            <%= unrealized_pl.toLocaleString('en-US', { style: 'currency',
+            currency: 'USD' }) %>
+          </p>
+        </div>
+        <div>
+          <h3>Cash Buying Power</h3>
+          <p>
+            <%= cash_bp.toLocaleString('en-US', { style: 'currency', currency:
+            'USD' }) %>
+          </p>
+        </div>
+      </div>
+      <div class="quote-container">
+        <!-- Quotes will be populated by JavaScript -->
+        <div class="quote-text">"<%= dailyQuote.text %>"</div>
+        <div class="quote-author cream">— <%= dailyQuote.author %></div>
+      </div>
+    </section>
+
+    <section class="holdings">
+      <h2>Asset Holdings</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>
+              <div>Market value</div>
+              <div>Shares</div>
+            </th>
+            <th>
+              <div>Price</div>
+              <div>Cost</div>
+            </th>
+            <th>
+              <div>P/L</div>
+              <div>%</div>
+            </th>
+            <th>% of Portfolio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% holdings.forEach(h => { %>
+          <tr>
+            <td class="stock_name"><%= h.stock_name %></td>
+            <td>
+              <div>
+                <%= h.market_val.toLocaleString('en-US', { style: 'currency',
+                currency: 'USD' }) %>
+              </div>
+              <div class="sub"><%= h.qty %></div>
+            </td>
+            <td>
+              <div>
+                <%= h.price.toLocaleString('en-US', { style: 'currency',
+                currency: 'USD' }) %>
+              </div>
+              <div class="sub">
+                <%= h.cost.toLocaleString('en-US', { style: 'currency',
+                currency: 'USD' }) %>
+              </div>
+            </td>
+            <td>
+              <div>
+                <%= h.unrealized_pl.toLocaleString('en-US', { style: 'currency',
+                currency: 'USD' }) %>
+              </div>
+              <div class="sub">
+                <%= h.pl_ratio.toLocaleString('en-US', { minimumFractionDigits:
+                2, maximumFractionDigits: 2 }) + '%' %>
+              </div>
+            </td>
+            <td>
+              <%= h.portfolio_ratio.toLocaleString('en-US', { style: 'percent',
+              minimumFractionDigits: 2 }) %>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </section>
+
+
+    <section class="footer">
+      <p>Built by wonnom for tracking investments.</p>
+    </section>
+
+    <script>
+    </script>
+  </body>
+</html>
