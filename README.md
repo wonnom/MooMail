@@ -12,3 +12,6 @@ Setup Process:
 6) Run client.py to test for connection
 7) Run App.js
 8) log onto http://localhost:3000/ to view portfolio summary
+9) create app password using personal gmail. type into form with personal gmail account to forward a copy to yourself!
+
+
