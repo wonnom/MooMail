@@ -1,5 +1,4 @@
-# MooMail
-### MooMoo Brokerage Portfolio Summary and Insights Generator.
+# MooMail, a MooMoo Brokerage Portfolio Summary and Insights Generator.
 ### Built for long term investors, MooMail delivers portfolio insights and summaries to your personal email. No more itchy fingers and panicking to market news when you monitor your portfolio comfortably from a distance! 
 This is a capstone project implementing NodeJS, express, ejs/css and python.
 This webpage helps users with an existing MooMoo Brokerage account log their portfolio data through pie-charts, asset breakdowns and P/L graphs to monitor their personal portfolio.
