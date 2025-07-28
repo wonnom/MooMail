@@ -1,5 +1,10 @@
 # MooMail
-MooMoo Brokerage Portfolio Summary and Insights Generator 
+### MooMoo Brokerage Portfolio Summary and Insights Generator.
+### Built for long term investors, MooMail delivers portfolio insights and summaries to your personal email. No more itchy fingers and panicking to market news when you monitor your portfolio comfortably from a distance! 
+This is a capstone project implementing NodeJS, express, ejs/css and python.
+This webpage helps users with an existing MooMoo Brokerage account log their portfolio data through pie-charts, asset breakdowns and P/L graphs to monitor their personal portfolio.
+Users can also send a snapshot of their portfolio to their personal email through the built in emailing function on the webpage.
+<img width="1693" height="927" alt="Screenshot 2025-07-28 at 11 24 17 AM" src="https://github.com/user-attachments/assets/f57ffc2a-88c5-44da-978d-03c09e0ae7d2" />
 
 
 Setup Process:
@@ -12,13 +17,9 @@ Setup Process:
 6) (Optional) Run client.py to test for connection
 7) Run App.js
 8) log onto http://localhost:3000/ to view portfolio summary
-<img width="1693" height="927" alt="Screenshot 2025-07-28 at 11 24 17 AM" src="https://github.com/user-attachments/assets/f57ffc2a-88c5-44da-978d-03c09e0ae7d2" />
-
 
 
 <img width="1696" height="929" alt="Screenshot 2025-07-28 at 11 25 41 AM" src="https://github.com/user-attachments/assets/91f996d8-83ec-4e66-93e7-df873d0ff03e" />
-
-
 
    
 9) create app password using personal gmail. type into form with personal gmail account to forward a copy to yourself!
